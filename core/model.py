@@ -124,6 +124,9 @@ class Record:
 		self.red_width = self.n6-self.n1
 		# (3) red delta 
 		# 2,13,17,20,25,33===> 11,4,3,5,8
+		self.red_delta = []
+		for i in range(1,len(red_list)):
+			self.red_delta.append(red_list[i]-red_list[i-1])
 
 	def stats_str(self):
 		return "<stats>\n [red]  sum={0} 01_str={1} 01_count={2} prim={3}\n [blue] sum={4} 01_str={5} 01_count={6} prim={7}\n 3zone = {8}".format(self.red_sum,self.red_01_str,self.red_01_count,self.red_prim_count,
@@ -371,10 +374,10 @@ class Stats:
 		self.blue_sum_avg_e = (BLUE_MIN_NUMBER + BLUE_MAX_NUMBER)*BLUE_COUNT/2.0
 
 		# red only
-		# red shift base
-		self.red_shift_to_base_list = self.__get_red_shift_to_base_list()
-		# red width
-		self.red_width_list = self.__get_red_width_list()
+		self.red_shift_to_base_list = []
+		self.red_width_list = []
+		self.red_delta_list = []
+		self.__get_red_only_list()
 
 		# red/blue prim pair
 		self.prim_count_list = zip(self.red_prim_count_list,self.blue_prim_count_list)
@@ -418,6 +421,7 @@ class Stats:
 		# red only
 		self.__save_list('red_shift_to_base_list',self.red_shift_to_base_list)
 		self.__save_list('red_width_list',self.red_width_list)
+		self.__save_list('red_delta_list',self.red_delta_list)
 
 	"""
 	get red xxx list
@@ -456,15 +460,8 @@ class Stats:
 	"""
 	red related methods
 	"""
-	# red shift to base
-	def __get_red_shift_to_base_list(self):
-		self.red_shift_to_base_list = []
+	def __get_red_only_list(self):
 		for record in self.rc.get_records():
 			self.red_shift_to_base_list.append(record.red_shift_to_base)
-		return self.red_shift_to_base_list
-	# red width 
-	def __get_red_width_list(self):
-		self.red_width_list = []
-		for record in self.rc.get_records():
 			self.red_width_list.append(record.red_width)
-		return self.red_width_list
+			self.red_delta_list.append(record.red_delta)
