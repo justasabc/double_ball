@@ -56,5 +56,4 @@ target/
 
 # by kzl
 *.swp
-ref/
 data/output/
