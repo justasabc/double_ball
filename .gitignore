@@ -57,3 +57,4 @@ target/
 # by kzl
 *.swp
 data/output/
+tmp

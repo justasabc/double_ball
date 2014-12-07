@@ -5,6 +5,11 @@ __all__ = ['Record','RecordCollection','FileReader','Stats']
 
 from constants import *
 
+class RedSequence:
+	# 10,11,12,13,26,28
+	def __init__(self,red_list):
+		self.red_list = red_list
+
 # 03001 10 11 12 13 26 28 11 10307806 0 0 898744 1 2003-2-20 2003-2-23
 class Record: 
 	
@@ -36,6 +41,8 @@ class Record:
 		self.__stats_red()
 
 	def __stats_red_blue(self):
+		self.red_list = [self.n1,self.n2,self.n3,self.n4,self.n5,self.n6]
+		self.blue_list = [self.n7]
 		self.red_sum = 0
 		self.blue_sum = 0
 		self.red_01_str = ""
@@ -51,11 +58,10 @@ class Record:
 
 		# get stats
 		# red
-		red_list = [self.n1,self.n2,self.n3,self.n4,self.n5,self.n6]
 		c0 = 0
 		c1 = 0
 		prim = 0
-		for n in red_list:
+		for n in self.red_list:
 			self.red_sum += n 
 			if n%2==0:
 				self.red_01_str += '0'
@@ -70,11 +76,10 @@ class Record:
 		self.red_prim_count = prim
 
 		# blue
-		blue_list = [self.n7]
 		c0 = 0
 		c1 = 0
 		prim = 0
-		for n in blue_list:
+		for n in self.blue_list:
 			self.blue_sum += n 
 			if n%2==0:
 				self.blue_01_str += '0'
@@ -93,7 +98,7 @@ class Record:
 		zone1 = 0
 		zone2 = 0
 		zone3 = 0
-		for n in red_list:
+		for n in self.red_list:
 			if n>=RED_ZONE1[0] and n<=RED_ZONE1[1]:
 				zone1 +=1
 			elif n>=RED_ZONE2[0] and n<=RED_ZONE2[1]:
@@ -105,7 +110,7 @@ class Record:
 		# blue
 		zone1 = 0
 		zone2 = 0
-		for n in blue_list:
+		for n in self.blue_list:
 			if n>=BLUE_ZONE1[0] and n<=BLUE_ZONE1[1]:
 				zone1 +=1
 			elif n>=BLUE_ZONE2[0] and n<=BLUE_ZONE2[1]:
@@ -113,34 +118,37 @@ class Record:
 		self.blue_2zone_count = (zone1,zone2)
 
 	def __stats_red(self):
-		red_list = [self.n1,self.n2,self.n3,self.n4,self.n5,self.n6]
 		# (1) red shift to base
 		# 2,13,17,20,25,33===>11,15,18,23,31
 		self.red_shift_to_base = []
-		for n in red_list[1:]:
-			self.red_shift_to_base.append(n-red_list[0])
+		for n in self.red_list[1:]:
+			self.red_shift_to_base.append(n-self.red_list[0])
 
 		# (2) red head-tail width 
 		self.red_width = self.n6-self.n1
 		# (3) red delta 
 		# 2,13,17,20,25,33===> 11,4,3,5,8
 		self.red_delta = []
-		for i in range(1,len(red_list)):
-			self.red_delta.append(red_list[i]-red_list[i-1])
+		for i in range(1,len(self.red_list)):
+			self.red_delta.append(self.red_list[i]-self.red_list[i-1])
 
 	def stats_str(self):
 		return "<stats>\n [red]  sum={0} 01_str={1} 01_count={2} prim={3}\n [blue] sum={4} 01_str={5} 01_count={6} prim={7}\n 3zone = {8}".format(self.red_sum,self.red_01_str,self.red_01_count,self.red_prim_count,
 			self.blue_sum,self.blue_01_str,self.blue_01_count,self.blue_prim_count,
 			self.red_3zone_count)
 
+	def __fn(self,number):
+		return "%02d" % number
+		
 	def long_str(self):
 		return "{0} [{1} {2} {3} {4} {5} {6} {7}] {8} {9} {10} {11} {12} {13} {14}".format(self.id,self.n1,self.n2,self.n3,self.n4,self.n5,self.n6,self.n7,self.total_money,self.one_money,self.one_count,self.two_money,self.two_count,self.start_date,self.end_date)
 
 	def short_str(self):
-		return "{0} [{1} {2} {3} {4} {5} {6} {7}] {8}/{9}".format(self.id,self.n1,self.n2,self.n3,self.n4,self.n5,self.n6,self.n7,self.start_date,self.end_date)
+		#return "{0} [{1} {2} {3} {4} {5} {6} {7}] {8}/{9}".format(self.id,self.__fn(self.n1),self.__fn(self.n2),self.__fn(self.n3),self.__fn(self.n4),self.__fn(self.n5),self.__fn(self.n6),self.__fn(self.n7),self.start_date,self.end_date)
+		return "{0} [{1} {2} {3} {4} {5} {6} {7}] {8}".format(self.id,self.__fn(self.n1),self.__fn(self.n2),self.__fn(self.n3),self.__fn(self.n4),self.__fn(self.n5),self.__fn(self.n6),self.__fn(self.n7),self.end_date)
 
 	def str(self):
-		return "%s [%02d %02d %02d %02d %02d %02d %02d] %s/%s" % (self.id,self.n1,self.n2,self.n3,self.n4,self.n5,self.n6,self.n7,self.start_date,self.end_date)
+		return self.short_str()
 
 	def __str__(self):
 		return self.long_str()
@@ -169,6 +177,22 @@ class RecordCollection:
 				return record
 		print "Warning. can not find record id =%s".format(id)
 		return None
+
+	"""
+	print record 
+	"""
+	def print_record(self,record):
+		if record:
+			print record.str()
+
+	"""
+	print record list
+	"""
+	def print_records(self,record_list):
+		if record_list:
+			for record in record_list:
+				print record.str()
+			print "#{0} records".format( len(record_list) )
 
 	"""
 	querying methods:
@@ -299,7 +323,7 @@ class RecordCollection:
 	def save(self,filepath):
 		with open(filepath,'w') as f:
 			for record in self.records:
-				line = "%02d %02d %02d %02d %02d %02d %02d\n" % (record.n1,record.n2,record.n3,record.n4,record.n5,record.n6,record.n7)
+				line = record.str()+"\n"
 				f.write(line)
 		print "generated {0}.".format(filepath)
 
@@ -378,6 +402,7 @@ class Stats:
 		self.red_width_list = []
 		self.red_delta_list = []
 		self.__get_red_only_list()
+		self.red_width_avg = self.__avg_list(self.red_width_list)
 
 		# red/blue prim pair
 		self.prim_count_list = zip(self.red_prim_count_list,self.blue_prim_count_list)
@@ -465,3 +490,6 @@ class Stats:
 			self.red_shift_to_base_list.append(record.red_shift_to_base)
 			self.red_width_list.append(record.red_width)
 			self.red_delta_list.append(record.red_delta)
+
+	def get_red_width_avg(self):
+		return self.red_width_avg

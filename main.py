@@ -20,58 +20,39 @@ def get_rc():
 
 def test_query(rc):
 	record = rc.get_record_by_id('03088')
-	if record:
-		print record.str()
+	rc.print_record(record)
 	print "="*50
 	print "geting x records by year,month,day..."
 	result = rc.query_by_year(2003)
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
+
 	result = rc.query_by_year_month(2003,2)
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
+
 	result = rc.query_by_year_month_day(2003,2,27)
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
 	"""
 	print "="*50
 	print "geting x record by pos..."
 	result = rc.query_by_number_pos(1,1)
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
+
 	result = rc.query_by_number_pos(33,6)
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
 	"""
 	print "="*50
 	print "geting x record by list..."
 	result = rc.query_by_number_list([10,12,20])
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
 	print "="*50
 	print "test numbers..."
 	rc.test_number(8,17,21,26,28,29,7)
 	rc.test_number(3,7,10,12,20,25,12)
 	result = rc.query_by_number_list([8,17,21,26,28,29])
-	if result:
-		for record in result:
-			print record.str()
-		print "#{0} records".format( len(result) )
+	rc.print_records(result)
 	print "="*50
 	print "save results..."
-	filepath = "{0}{1}".format(input_folder,"standard_data.txt")
+	filepath = "{0}{1}".format(output_folder,"standard_data.txt")
 	rc.save(filepath)
 
 def test_stats(rc):
@@ -79,6 +60,7 @@ def test_stats(rc):
 	st = Stats(rc)
 	print "[red]  real:%f, expected:%f " % (st.get_red_sum_avg(),st.get_red_sum_avg_e())
 	print "[blue] real:%f, expected:%f " % (st.get_blue_sum_avg(),st.get_blue_sum_avg_e())
+	print "[red_width]  real:%f" % (st.get_red_width_avg())
 	st.save()
 
 def main():
