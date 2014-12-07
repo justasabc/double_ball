@@ -4,11 +4,30 @@
 __all__ = ['Record','RecordCollection','FileReader','Stats']
 
 from constants import *
+from plot import *
+import matplotlib.pyplot as plt
 
-class RedSequence:
-	# 10,11,12,13,26,28
+class RedConsecutiveProperty:
 	def __init__(self,red_list):
+		# red list
+		# 2,13,17,20,25,33
 		self.red_list = red_list
+		# red delta 
+		# 2,13,17,20,25,33===> 11,4,3,5,8
+		self.red_delta = []
+		for i in range(1,len(self.red_list)):
+			self.red_delta.append(self.red_list[i]-self.red_list[i-1])
+
+	def consecutive_6(self):
+		# 1 1 1 1 1
+		for delta in self.red_delta:
+			if delta !=1:
+				return 0
+		return 1
+
+	def consecutive_5(self):
+		# 1 1 1 1 3
+		return 1
 
 # 03001 10 11 12 13 26 28 11 10307806 0 0 898744 1 2003-2-20 2003-2-23
 class Record: 
@@ -126,8 +145,6 @@ class Record:
 
 		# (2) red head-tail width 
 		self.red_width = self.n6-self.n1
-		# (3) red delta 
-		# 2,13,17,20,25,33===> 11,4,3,5,8
 		self.red_delta = []
 		for i in range(1,len(self.red_list)):
 			self.red_delta.append(self.red_list[i]-self.red_list[i-1])
@@ -447,6 +464,26 @@ class Stats:
 		self.__save_list('red_shift_to_base_list',self.red_shift_to_base_list)
 		self.__save_list('red_width_list',self.red_width_list)
 		self.__save_list('red_delta_list',self.red_delta_list)
+
+	def plot_red_sum_list(self):
+		plt.title("red_sum_list")
+		plt.xlabel("x")
+		plt.ylabel("red_sum")
+		plt.axhline(y=102,linewidth=3,color='b')
+		plt.plot(self.red_sum_list,"ro")
+		plt.show()
+
+	def plot_blue_sum_list(self):
+		plt.axhline(y=8.5,linewidth=4,color='b')
+		plt.plot(self.blue_sum_list,"ro")
+		plt.show()
+
+	def plot_red_width_list(self):
+		plt.title("red_width_list")
+		plt.xlabel("x")
+		plt.ylabel("red_width")
+		plt.plot(self.red_width_list,"ro")
+		plt.show()
 
 	"""
 	get red xxx list

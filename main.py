@@ -62,6 +62,9 @@ def test_stats(rc):
 	print "[blue] real:%f, expected:%f " % (st.get_blue_sum_avg(),st.get_blue_sum_avg_e())
 	print "[red_width]  real:%f" % (st.get_red_width_avg())
 	st.save()
+	#st.plot_red_sum_list()
+	#st.plot_blue_sum_list()
+	st.plot_red_width_list()
 
 def main():
 	rc = get_rc()
